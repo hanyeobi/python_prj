@@ -281,4 +281,4 @@ def home():
     ''', ticker=ticker, start_date=start_date, end_date=end_date, chart_html=chart_html)
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host='0.0.0.0', debug=True)
