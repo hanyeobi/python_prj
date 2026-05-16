@@ -207,42 +207,77 @@ def home():
         chart_html = "<h3>Please enter search criteria and submit.</h3>"
 
     return render_template_string('''
-        <!DOCTYPE html>
-        <html lang="en">
-        <head>
-            <meta charset="UTF-8">
-            <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
-            <title>캔들차트</title>
-        </head>
-        <body>
-            <h1>주식 캔들차트</h1>
-            <form method="POST">
-                <label>티커 (Ticker):</label>
-                <input type="text" name="ticker" value="{{ ticker }}" required>
-                <br>
-                <label>조회 시작일 (Start Date):</label>
-                <input type="date" name="start_date" value="{{ start_date }}" required>
-                <br>
-                <label>조회 종료일 (End Date):</label>
-                <input type="date" name="end_date" value="{{ end_date }}" required>
-                <br>
-                <label>간격 (Interval):</label>
-                <select name="interval">
-                    <option value="1m">1분</option>
-                    <option value="5m">5분</option>
-                    <option value="15m">15분</option>
-                    <option value="30m">30분</option>
-                    <option value="60m">1시간</option>
-                    <option value="1d" selected>1일</option>
-                    <option value="1wk">1주</option>
-                    <option value="1mo">1개월</option>
-                </select>
-                <br><br>
-                <button type="submit">조회</button>
-            </form>
-            <div id="chart">{{ chart_html | safe }}</div>
-        </body>
-        </html>
+         <!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>캔들분석</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.plot.ly/plotly-3.5.1.min.js"></script>
+</head>
+<body class="bg-light">
+
+    <!-- 네비게이션 바 -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">📈캔들분석/a>
+        </div>
+    </nav>
+
+    <!-- 메인 컨테이너 -->
+    <div class="container mt-5">
+        <h1 class="text-center mb-4">캔들차트 조회</h1>
+
+        <!-- 입력 폼 -->
+        <div class="card shadow-sm mb-4">
+            <div class="card-body">
+                <form method="POST" class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label">티커 (Ticker)</label>
+                        <input type="text" class="form-control" name="ticker" value="{{ ticker }}" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">간격 (Interval)</label>
+                        <select class="form-select" name="interval">
+                            <option value="1m">1분</option>
+                            <option value="5m">5분</option>
+                            <option value="15m">15분</option>
+                            <option value="30m">30분</option>
+                            <option value="60m">1시간</option>
+                            <option value="1d" selected>1일</option>
+                            <option value="1wk">1주</option>
+                            <option value="1mo">1개월</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">조회 시작일 (Start Date)</label>
+                        <input type="date" class="form-control" name="start_date" value="{{ start_date }}" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">조회 종료일 (End Date)</label>
+                        <input type="date" class="form-control" name="end_date" value="{{ end_date }}" required>
+                    </div>
+                    <div class="col-12 text-center mt-3">
+                        <button type="submit" class="btn btn-primary btn-lg">조회</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- 차트 영역 -->
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title">📊 캔들차트</h5>
+                <div id="chart">{{ chart_html | safe }}</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
     ''', ticker=ticker, start_date=start_date, end_date=end_date, chart_html=chart_html)
 
 if __name__ == '__main__':
