@@ -59,7 +59,7 @@ def add_moving_averages(data):
 
 def create_chart(data, ticker):
     """Plotly를 사용하여 캔들차트를 생성."""
-
+    print("create_chart 함수 실행")
     # 날짜 형식을 문자열로 변환 후 '년-월-일' 형식으로 다시 변환
     data.index = pd.to_datetime(data.index).strftime('%Y-%m-%d')
     
@@ -125,7 +125,7 @@ def create_chart(data, ticker):
     fig.update_xaxes(type='category',
                         tickvals=dates,
                         tickformat='%Y-%m-%d')
-    
+    print("create_chart 함수 실행 " )
     return fig.to_html(full_html=False)
 
 def draw_bull_bear_box(fig, data, bull_bear_type):
