@@ -118,7 +118,7 @@ def create_chart(data, ticker):
         xaxis_title='Date',
         yaxis_title='Price',
         xaxis_rangeslider_visible=False,
-        width=1800,
+        width=1024,
         height=800
     )
 
