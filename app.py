@@ -175,7 +175,7 @@ def draw_bull_bear_box(fig, data, bull_bear_type):
 @app.route('/', methods=['GET', 'POST'])
 def home():
     today = datetime.now()
-    startdate = today - timedelta(days=200)
+    startdate = today - timedelta(days=330)
     ticker = 'RGTI'
     start_date = startdate.strftime('%Y-%m-%d')
     end_date = today.strftime('%Y-%m-%d')
@@ -221,7 +221,7 @@ def home():
     <!-- 네비게이션 바 -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container-fluid">
-            <a class="navbar-brand" href="#">📈캔들분석/a>
+            <a class="navbar-brand" href="#">📈캔들분석</a>
         </div>
     </nav>
 
