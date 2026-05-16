@@ -17,6 +17,7 @@ def fetch_data(ticker, start_date, end_date, interval):
 
     return data
 
+
 def preprocess_data(data):
     """데이터 전처리."""
     data['Prev Close'] = data['Close'].shift(1)
