@@ -1,9 +1,10 @@
-from flask import Flask, render_template_string, request
+from flask import Flask, render_template_string, request, jsonify
 import yfinance as yf
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 import pandas as pd
 from datetime import datetime, timedelta
+import sqlite3
 
 app = Flask(__name__)
 
@@ -172,11 +173,31 @@ def draw_bull_bear_box(fig, data, bull_bear_type):
                         fillcolor=rgba 
         )
 
+def get_tickers():
+    conn = sqlite3.connect("database.db")
+    cur = conn.cursor()
+    cur.execute("select title, ticker, sector from ticker")
+    rows = cur.fetchall()
+    conn.close()
+    return rows
+
+@app.route('/search_ticker')
+def search_ticker():
+    query = request.args.get('query', '')
+    conn = sqlite3.connect("database.db")
+    cur = conn.cursor()
+    cur.execute("SELECT ticker, title, sector FROM ticker WHERE ticker LIKE ? OR title LIKE ?", 
+                (f"%{query}%", f"%{query}%"))
+    rows = cur.fetchall()
+    conn.close()
+    return jsonify([{"ticker": r[0], "title": r[1]} for r in rows])
+
 @app.route('/', methods=['GET', 'POST'])
 def home():
+    # tickers = get_tickers()
     today = datetime.now()
     startdate = today - timedelta(days=330)
-    ticker = 'RGTI'
+    ticker = ''
     start_date = startdate.strftime('%Y-%m-%d')
     end_date = today.strftime('%Y-%m-%d')
 
@@ -235,7 +256,10 @@ def home():
                 <form method="POST" class="row g-3">
                     <div class="col-md-6">
                         <label class="form-label">티커 (Ticker)</label>
-                        <input type="text" class="form-control" name="ticker" value="{{ ticker }}" required>
+                        <div class="input-group">
+                            <input type="text" class="form-control" name="ticker" value="{{ ticker }}" id="ticker" required>
+                            <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#tickerModal">티커 선택</button>
+                        </div>
                     </div>
                     <div class="col-md-6">
                         <label class="form-label">간격 (Interval)</label>
@@ -274,7 +298,54 @@ def home():
         </div>
     </div>
 
+    <!-- 모달 -->
+<div class="modal fade" id="tickerModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-sm">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">티커 리스트</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <div class="input-group mb-3">
+          <input type="text" id="searchInput" class="form-control" placeholder="티커 입력">
+          <button class="btn btn-primary" id="searchBtn">검색</button>
+        </div>
+        <ul class="list-group" id="searchResults"></ul>
+      </div>
+    </div>
+  </div>
+</div>
     <!-- Bootstrap JS -->
+    <script>
+        document.getElementById('searchBtn').addEventListener('click', function() {
+    const query = document.getElementById('searchInput').value;
+    console.log(query);
+    fetch(`/search_ticker?query=${query}`)
+        .then(response => response.json())
+        .then(data => {
+            const results = document.getElementById('searchResults');
+            results.innerHTML = '';
+            data.forEach(item => {
+                const li = document.createElement('li');
+                li.className = 'list-group-item selectable';
+                li.textContent = `${item.ticker} (${item.title})`;
+                li.setAttribute('data-value', item.ticker);
+                results.appendChild(li);
+            });
+
+            document.querySelectorAll('.selectable').forEach(item => {
+                item.addEventListener('click', function() {
+                    const ticker_value = this.getAttribute('data-value');
+                    document.getElementById('ticker').value = ticker_value; // id 맞추기
+                    var modal = bootstrap.Modal.getInstance(document.getElementById('tickerModal'));
+                    modal.hide();
+                });
+                                  
+            });
+        });
+});
+    </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
